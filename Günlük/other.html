@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cevaplar Kitabı</title>
+  <style>
+    body {
+      background-color: #f3f4f6;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 20px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #1f2937;
+    }
+    textarea {
+      width: 100%;
+      max-width: 500px;
+      height: 100px;
+      padding: 10px;
+      font-size: 1rem;
+      margin-bottom: 20px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 32px;
+      font-size: 1.25rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+    button:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+    #yeniden {
+      font-size: 1.25rem;
+      padding: 15px 20px;
+      background-color: #e5e7eb;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #cevap {
+      font-size: 2rem;
+      color: #1f2937;
+      font-weight: bold;
+      margin-top: 20px;
+      padding: 20px;
+      border: 2px dashed #6b7280;
+      border-radius: 12px;
+      background: #fff;
+      max-width: 600px;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+      <!-- Geri Dönüş Butonu -->
+      <div class="absolute bottom-10 left-10">
+        <a href="index.html" class="bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition duration-300">Geri Dön</a>
+      </div>
+  <h1>Cevaplar Kitabı</h1>
+  <textarea id="soru" placeholder="Bir soru sor..."></textarea>
+  <div class="buttons">
+    <button id="sorBtn" onclick="rastgeleCevap()">SOR</button>
+    <button id="yeniden" onclick="sifirla()">↻</button>
+  </div>
+  <div id="cevap">Cevap yükleniyor...</div>
+
+  <script>
+    const cevaplar = [
+  "Evet.", "Hayır.", "Şu an için hayır.", "Kesinlikle evet.", "Bekle ve gör.",
+  "Zamanla ortaya çıkacak.", "İmkansız değil.", "Neden olmasın?", "Şüpheli.",
+  "Olabilir.", "Gelecek parlak görünüyor.", "Kendine güven.", "Şansını dene.",
+  "Karar senin.", "Bugün değil.", "Asla deme, bekle.", "Kesinlikle hayır.",
+  "İhtimaller düşük.", "Umudunu kaybetme.", "Biraz daha çaba gerek.",
+  "Şimdi değil, yakında.", "Belki sonra.", "Olumlu gelişmeler yolda.",
+  "Emin olamazsın.", "Zor bir seçim.",
+  // Yeni 100 cevap
+  "Hayallerine inan.", "Risk almadan olmaz.", "Sabırlı ol.", "Zaman seni destekleyecek.",
+  "Küçük bir adım büyük fark yaratır.", "Şans kapını çalmak üzere.", "Kafanı netleştir.",
+  "İç sesini dinle.", "Dış faktörlere dikkat et.", "Karma devrede.", "Yolun açık.",
+  "Gizli fırsatlar var.", "Yol biraz karışık ama mümkün.", "Bilinçli hareket et.",
+  "Biri sana engel olabilir.", "Tam zamanı değil.", "Yeni bilgiler gerekebilir.",
+  "Hayır, ama yeni bir kapı açılacak.", "Evren net değil şu an.", "Kendinle yüzleş.",
+  "Dikkatli düşün, sonra hareket et.", "İnat etme, akışa bırak.", "Bu iş sende.",
+  "Kararsızlık seni yavaşlatıyor.", "Acele etme, zaman var.", "Doğru insanlarla ol.",
+  "Duyguların seni yanıltabilir.", "Doğru soruyu sor.", "Enerjin yön değiştiriyor.",
+  "Evet, ama dikkatli ilerle.", "Sorunun cevabı başka yerde olabilir.",
+  "Gözünü dört aç.", "Henüz olgunlaşmadı.", "İçgüdülerine güven.",
+  "Her şey mümkün.", "Olumlu bir dönüş yolda.", "Şartlar değişecek.",
+  "Açık fikirlilik kazandırır.", "Fırsatlar kapıda.", "Yol ayrımındasın.",
+  "İkna edici olman gerek.", "Bu iş biraz karmaşık.", "Geçmişe bak, cevap orada.",
+  "Bir dur ve düşün.", "Hedefin netleşmeli.", "Yap ama doğru zamanda.",
+  "İlham alacağın biri var.", "Zihin açıklığına ihtiyacın var.", "Çok düşünme, hisset.",
+  "İkincil plan işe yarayabilir.", "Olasılıklar sana bağlı.", "Doğru yoldasın.",
+  "Hayır ama bu kötü değil.", "Cevap yakında karşına çıkacak.", "Yeni bir fikir gerekli.",
+  "Tutkun seni yönlendirsin.", "Soru değişmeli.", "Kendine dürüst ol.",
+  "Her son bir başlangıçtır.", "Daha çok veri lazım.", "Cevap gizli bir detayda.",
+  "Yolun değişecek gibi.", "Deneyim kazandıracak.", "Bu da geçecek.",
+  "Bugün cevap alma günü değil.", "Geleceği sen şekillendir.", "Doğru kişiye sor.",
+  "Sürpriz bir gelişme olacak.", "Sakin kal ve izle.", "Şaşırtıcı bir sonuç olabilir.",
+  "Önce küçük bir test var.", "Doğru soru bu olmayabilir.", "Yanıltıcı bir sinyal alıyorsun.",
+  "Gerçek ortaya çıkacak.", "Uyanık ol, gözden kaçma.", "Soru doğruysa cevap nettir.",
+  "Belirsizlik avantajına olabilir.", "Sabırsızlık işini bozabilir.",
+  "Zamanlama çok önemli.", "Yolculuğa odaklan, sonuca değil.", "Etrafına bak, ipucu var.",
+  "Büyük resmi gör.", "Bazı şeyleri kabul etmelisin.", "Gizli destek geliyor.",
+  "Çevrenin etkisi büyük.", "Yarını bekle.", "Kendini hazırla.",
+  "Cevap içinde zaten vardı.", "Ciddiyetini sorgula.", "Güvendiğin kişiyle konuş.",
+  "Bilinmeyen seni çağırıyor.", "Hayal ettiğinden farklı sonuç alacaksın.",
+  "Sürprizli bir yolculuk seni bekliyor.", "Bu defa farklı olacak.",
+  "Geçmişle barış, cevap orada.", "Dur ve yeniden başla.",
+  "Uyanmaya hazır mısın?", "Değişim rüzgarları esiyor.", "Cevap: belki de sensin."
+];
+
+      
+    
+
+    function rastgeleCevap() {
+      const soru = document.getElementById("soru").value.trim();
+      const cevap = document.getElementById("cevap");
+      const buton = document.getElementById("sorBtn");
+
+      if (soru === "") {
+        alert("Lütfen bir soru girin!");
+        return;
+      }
+
+      const index = Math.floor(Math.random() * cevaplar.length);
+      cevap.innerText = cevaplar[index];
+      cevap.style.display = "block";
+      buton.disabled = true;
+    }
+
+    function sifirla() {
+      document.getElementById("soru").value = "";
+      document.getElementById("cevap").style.display = "none";
+      document.getElementById("sorBtn").disabled = false;
+    }
+  </script>
+</body>
+</html>

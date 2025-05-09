@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Döviz ve Altın Kurları - AnlıkGöz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <section class="min-h-screen flex flex-col items-center justify-center p-6">
+    <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-3xl space-y-6">
+      <h1 class="text-2xl font-bold text-center mb-4">Döviz ve Altın Kurları</h1>
+
+      <!-- USD -->
+      <div class="bg-gray-200 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold">Dolar (USD)</h2>
+        <p id="usd" class="text-base mt-1">Yükleniyor...</p>
+      </div>
+
+      <!-- EUR -->
+      <div class="bg-gray-200 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold">Euro (EUR)</h2>
+        <p id="euro" class="text-base mt-1">Yükleniyor...</p>
+      </div>
+
+      <!-- GBP -->
+      <div class="bg-gray-200 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold">Sterlin (GBP)</h2>
+        <p id="gbp" class="text-base mt-1">Yükleniyor...</p>
+      </div>
+
+      <!-- Gram Altın -->
+      <div class="bg-yellow-100 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold">Gram Altın</h2>
+        <p id="gold-gram" class="text-base mt-1">Yükleniyor...</p>
+      </div>
+
+      <!-- Çeyrek Altın -->
+      <div class="bg-yellow-100 p-4 rounded-lg">
+        <h2 class="text-xl font-semibold">Çeyrek Altın</h2>
+        <p id="quarter-gold" class="text-base mt-1">Yükleniyor...</p>
+      </div>
+
+       <!-- Geri Dönüş Butonu -->
+    <div class="absolute bottom-10 left-10">
+        <a href="index.html" class="bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-700 transition duration-300">Geri Dön</a>
+      </div>
+  </section>
+
+  <script>
+    async function fetchRates() {
+      try {
+        // TCMB üzerinden alınan özel API veya alternatifler kullanılabilir.
+        const res = await fetch('https://api.exchangerate.host/latest?base=TRY');
+        const data = await res.json();
+
+        document.getElementById('usd').textContent = `1 USD = ${(1 / data.rates.USD).toFixed(2)} TL`;
+        document.getElementById('euro').textContent = `1 EUR = ${(1 / data.rates.EUR).toFixed(2)} TL`;
+        document.getElementById('gbp').textContent = `1 GBP = ${(1 / data.rates.GBP).toFixed(2)} TL`;
+      } catch (error) {
+        document.getElementById('usd').textContent = 'Veri alınamadı';
+        document.getElementById('euro').textContent = 'Veri alınamadı';
+        document.getElementById('gbp').textContent = 'Veri alınamadı';
+      }
+
+      try {
+        // GoldAPI yerine başka bir örnek API: fake değerler aşağıda yer alıyor
+        const gramAltin = 2500.00; // Gerçek veri için API gerekiyor
+        document.getElementById('gold-gram').textContent = `${gramAltin.toFixed(2)} TL`;
+        document.getElementById('quarter-gold').textContent = `${(gramAltin * 0.25).toFixed(2)} TL`;
+      } catch {
+        document.getElementById('gold-gram').textContent = 'Veri alınamadı';
+        document.getElementById('quarter-gold').textContent = 'Veri alınamadı';
+      }
+    }
+
+    window.onload = fetchRates;
